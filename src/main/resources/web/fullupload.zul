@@ -1,0 +1,46 @@
+<zk xmlns:w="client">
+    <button label="Завантажити" onClick="info.doPopup()"/>
+    <window id="info" visible="false" width="500px" border="normal" position="parent"
+            viewModel="@id('vm') @init('com.app.upload.UploadVM')">
+        <radiogroup id="fileTypes">
+            <radio id="dicom" label="DICOM" onClick="@command('visibility')"/>
+            <radio id="media" label="Image/Video" onClick="@command('visibility')" />
+            <radio id="file" label="Files" onClick="@command('visibility')" />
+        </radiogroup>
+        <div>
+            <fileupload label="Завантажити" id="folderUpload"
+                        w:directoryUpload="true"
+                        upload="true,native, maxsize=300000"
+                        onUpload="@command('uploadDicom', files=event.medias)"
+                        visible="@load(false)"/>
+
+            <fileupload label="Завантажити" id="mediaUpload"
+                        upload="true,native,maxsize=-1,multiple=true,accept=video/*|image/*"
+                        onUpload="@command('uploadDicom', files=event.medias)"
+                        visible="@load(false)"/>
+
+            <fileupload label="Завантажити" id="filesUpload"
+                        upload="true,native,maxsize=-1,multiple=true,accept=text/*|application/*"
+                        onUpload="@command('uploadFiles', files=event.medias)"
+                        visible="@load(false)"/>
+        </div>
+    </window>
+
+    <script><![CDATA[
+	zk.afterLoad('zul', function() {
+		var xUpload = {};
+		zk.override(zul.Upload.prototype, xUpload, {
+			initContent : function() {
+				xUpload.initContent.apply(this, arguments);
+				if(this._wgt.directoryUpload) {
+					this._inp.setAttribute('webkitdirectory', 'webkitdirectory');
+					this._inp.setAttribute('mozdirectory', 'mozdirectory');
+                    this._inp.setAttribute('file','multiple');
+				}
+			}
+		});
+	});
+	]]></script>
+</zk>
+
+

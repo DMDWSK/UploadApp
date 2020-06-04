@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NativeDicomModel xml:space="preserve">
+    <DicomAttribute keyword="PatientID" tag="00100020"/>
+    <DicomAttribute keyword="PatientName" tag="00100010"/>
+    <DicomAttribute keyword="PatientBirthDate" tag="00100030"/>
+    <DicomAttribute keyword="StudyID" tag="00200010"/>
+</NativeDicomModel>
