@@ -1,6 +1,4 @@
 package com.app.upload.service;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.IOD;
 import org.dcm4che3.data.Tag;
@@ -17,8 +15,6 @@ import org.dcm4che3.io.DicomInputStream;
 public class UploadService {
 
     private static final Logger LOG = LoggerFactory.getLogger(UploadService.class);
-
-    public static void videoToDicom(Media media) throws Exception { }
 
     public static Attributes getMetaData(String path){
         Attributes attributes = new Attributes();
@@ -59,14 +55,13 @@ public class UploadService {
         }
     }
 
-    public static void uploadHandler(String dirPath) {
+    public static ArrayList<String> uploadHandler(String dirPath) {
         File rootDir = new File(dirPath);
         File[] list = rootDir.listFiles();
         IOD iod = new IOD();
         ArrayList<String> dicomPaths = new ArrayList<String>();
 
-        if (list == null) return;
-        for (File file : list) {
+        for (File file : list != null ? list : new File[0]) {
             if (file.isDirectory()) {
                 uploadHandler(file.getAbsolutePath());
             } else {
@@ -85,20 +80,42 @@ public class UploadService {
                 } catch (IOException e) {   }
             }
         }
-        dicomCompare(dicomPaths);
+        return dicomPaths;
 
     }
-    public static void dicomCompare(ArrayList<String> dicomPaths){
-        ListMultimap<String, String> multimap = ArrayListMultimap.create();
-        ArrayList<String> keyValue = new ArrayList<String>();
+    
+    public static HashMap<String,ArrayList<String>> groupingTagsInfo(ArrayList<String> dicomPaths){
+        HashMap<String,ArrayList<String>>studies= new HashMap<String,ArrayList<String>>();
+
+        ArrayList<String> tagsData = new ArrayList<String>();
+
         for ( String dicomPath : dicomPaths) {
-            multimap.put(getMetaData(dicomPath).getString(Tag.StudyID)+
-                    getMetaData(dicomPath).getString(Tag.PatientID),dicomPath );
+            if (!studies.containsKey(getMetaData(dicomPath).getString(Tag.StudyID))) {
+                tagsData = new ArrayList<String>();
+                tagsData.add(getMetaData(dicomPath).getString(Tag.PatientID));
+                tagsData.add(getMetaData(dicomPath).getString(Tag.PatientName));
+                tagsData.add(getMetaData(dicomPath).getString(Tag.PatientBirthDate));
+                studies.put(getMetaData(dicomPath).getString(Tag.StudyID),tagsData);
+            }
         }
-        for (String dicomIdentification : multimap.keySet()) {
-            List<String> sortedPaths = multimap.get(dicomIdentification);
+        return studies;
+    }
+
+    public static HashMap<String,ArrayList<String>>groupingDicomPaths(ArrayList<String> dicomPaths){
+        HashMap<String,ArrayList<String>>studyPaths= new HashMap<String,ArrayList<String>>();
+        ArrayList<String> groupedPaths = new ArrayList<String>();
+        for ( String dicomPath : dicomPaths) {
+            if (studyPaths.containsKey(getMetaData(dicomPath).getString(Tag.StudyID))) {
+                studyPaths.get(getMetaData(dicomPath).getString(Tag.StudyID)).add(dicomPath);
+            }
+            else {
+                groupedPaths = new ArrayList<String>();
+                groupedPaths.add(dicomPath);
+                studyPaths.put(getMetaData(dicomPath).getString(Tag.StudyID),groupedPaths);
+            }
         }
-        System.out.println(multimap);
+        return studyPaths;
     }
 }
+
 

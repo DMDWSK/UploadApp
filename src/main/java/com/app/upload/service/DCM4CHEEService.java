@@ -7,7 +7,5 @@ public class DCM4CHEEService {
         String [] args = {"-c", "DCM4CHEE2@195.211.240.48:4949", path};
         StoreSCU.main(args);
     }
-
-
 }
 

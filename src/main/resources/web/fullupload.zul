@@ -1,11 +1,10 @@
 <zk xmlns:w="client">
-    <button label="Завантажити" onClick="info.doPopup()"/>
-    <window id="info" visible="false" width="500px" border="normal" position="parent"
-            viewModel="@id('vm') @init('com.app.upload.UploadVM')">
+<!--    <button label="Завантажити" onClick="info.doPopup()"/>-->
+    <window  visible="true" viewModel="@id('vm') @init('com.app.upload.UploadVM')">
         <radiogroup id="fileTypes">
             <radio id="dicom" label="DICOM" onClick="@command('visibility')"/>
-            <radio id="media" label="Image/Video" onClick="@command('visibility')" />
-            <radio id="file" label="Files" onClick="@command('visibility')" />
+            <radio id="media" label="Image/Video" onClick="@command('visibility')"/>
+            <radio id="file" label="Files" onClick="@command('visibility')"/>
         </radiogroup>
         <div>
             <fileupload label="Завантажити" id="folderUpload"
@@ -24,8 +23,25 @@
                         onUpload="@command('uploadFiles', files=event.medias)"
                         visible="@load(false)"/>
         </div>
+        <listbox id="patientData" multiple="true" checkmark="true"
+                 model="@bind(vm.groupingTagsInfo.entrySet())" onSelect="@command('getCheckedValues')">
+            <listhead>
+                <listheader label="StudyID"/>
+                <listheader label="PatientID"/>
+                <listheader label="Повне ім'я"/>
+                <listheader label="Дата Народження"/>
+            </listhead>
+            <template name="model" var="patientValue">
+            <listitem>
+                <listcell label="@load(patientValue.key)" value="@load(patientValue.key)"/>
+                <listcell label="@load(patientValue.value[0])" value="@load(patientValue.value[0])"/>
+                <listcell label="@load(patientValue.value[1])" value="@load(patientValue.value[1])"/>
+                <listcell label="@load(patientValue.value[2])" value="@load(patientValue.value[2])"/>
+            </listitem>
+            </template>
+        </listbox>
+        <button label="Надіслати" onClick="@command('dcm4cheeSender')"/>
     </window>
-
     <script><![CDATA[
 	zk.afterLoad('zul', function() {
 		var xUpload = {};
