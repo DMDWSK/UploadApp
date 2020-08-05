@@ -40,7 +40,12 @@
             </listitem>
             </template>
         </listbox>
-        <button label="Надіслати" onClick="@command('dcm4cheeSender')"/>
+
+        <button id="btnTest" onClick="@command('dcm4cheeSender')" label="start"/>
+        <progressmeter id="progressmeter" value="0"/>
+        <label id="percentLabel" value="0%"/>
+        <button id="crossButton" label="X" onClick="@command('cancelOperation')"/>
+<!--        <iframe src="~./progressBar.zul"/>-->
     </window>
     <script><![CDATA[
 	zk.afterLoad('zul', function() {

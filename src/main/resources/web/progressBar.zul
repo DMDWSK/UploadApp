@@ -1,0 +1,6 @@
+<zk>
+    <window viewModel="@id('vm') @init('com.app.upload.ThreadVM')">
+        <button id="btnTest" onClick="@command('startLongOperation')" label="start"/>
+        <button id="crossButton" label="X" onClick="@command('cancelOperation')"/>
+    </window>
+</zk>
